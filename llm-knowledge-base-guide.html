@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Knowledge Base — Hướng dẫn toàn diện</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e;
+  --paper: #faf9f6;
+  --paper-dark: #f0efe8;
+  --accent: #c0392b;
+  --accent-light: #e74c3c;
+  --accent-bg: #fdf2f0;
+  --green: #27ae60;
+  --green-bg: #eafaf1;
+  --blue: #2c3e50;
+  --blue-light: #3498db;
+  --blue-bg: #ebf5fb;
+  --gold: #f39c12;
+  --gold-bg: #fef9e7;
+  --gray: #7f8c8d;
+  --gray-light: #ecf0f1;
+  --border: #ddd;
+  --shadow: 0 2px 20px rgba(0,0,0,0.06);
+  --shadow-hover: 0 4px 30px rgba(0,0,0,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+/* ===== HEADER ===== */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  padding: 80px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 70%, rgba(192,57,43,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(52,152,219,0.1) 0%, transparent 50%);
+  animation: drift 20s ease-in-out infinite;
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-2%, 2%); }
+}
+.hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+.hero h1 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 3.2em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.hero .subtitle {
+  font-size: 1.2em;
+  opacity: 0.85;
+  font-weight: 300;
+  line-height: 1.6;
+}
+.hero .credit {
+  margin-top: 24px;
+  font-size: 0.9em;
+  opacity: 0.6;
+}
+.hero .credit a { color: var(--accent-light); text-decoration: none; }
+
+/* ===== NAVIGATION ===== */
+.toc-bar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+.toc-bar nav {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.toc-bar nav::-webkit-scrollbar { display: none; }
+.toc-bar a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.toc-bar a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ===== MAIN ===== */
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+/* ===== TYPOGRAPHY ===== */
+h2 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 2.2em;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 80px 0 12px;
+  padding-top: 20px;
+  letter-spacing: -0.01em;
+}
+h2 .num {
+  color: var(--accent);
+  font-weight: 300;
+  margin-right: 8px;
+}
+h3 {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 40px 0 12px;
+}
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 24px 0 8px;
+}
+p { margin: 12px 0; }
+strong { font-weight: 600; }
+
+/* ===== SPECIAL BLOCKS ===== */
+.callout {
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin: 24px 0;
+  position: relative;
+}
+.callout.idea { background: var(--blue-bg); border-left: 4px solid var(--blue-light); }
+.callout.warning { background: var(--gold-bg); border-left: 4px solid var(--gold); }
+.callout.important { background: var(--accent-bg); border-left: 4px solid var(--accent); }
+.callout.success { background: var(--green-bg); border-left: 4px solid var(--green); }
+.callout .callout-title {
+  font-weight: 700;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.callout.idea .callout-title { color: var(--blue-light); }
+.callout.warning .callout-title { color: var(--gold); }
+.callout.important .callout-title { color: var(--accent); }
+.callout.success .callout-title { color: var(--green); }
+
+/* ===== ANALOGY BOXES ===== */
+.analogy {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 28px 0;
+  box-shadow: var(--shadow);
+}
+.analogy .vs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: start;
+  margin: 16px 0;
+}
+.analogy .vs-divider {
+  font-size: 1.5em;
+  color: var(--gray);
+  padding-top: 20px;
+}
+.analogy .vs-item { padding: 16px; border-radius: 8px; }
+.analogy .vs-item.old { background: var(--gray-light); }
+.analogy .vs-item.new { background: var(--green-bg); }
+.analogy .vs-label {
+  font-weight: 700;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.analogy .vs-item.old .vs-label { color: var(--gray); }
+.analogy .vs-item.new .vs-label { color: var(--green); }
+
+/* ===== CODE ===== */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--gray-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--accent);
+}
+pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 24px;
+  overflow-x: auto;
+  margin: 20px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.comment { color: #6c7086; }
+.highlight { color: #f9e2af; }
+.string { color: #a6e3a1; }
+
+/* ===== STEPS ===== */
+.step {
+  display: flex;
+  gap: 24px;
+  margin: 28px 0;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.step:hover { box-shadow: var(--shadow-hover); }
+.step-num {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2em;
+  font-family: 'Crimson Pro', serif;
+}
+.step-content { flex: 1; }
+.step-content h4 { margin-top: 4px; }
+
+/* ===== DIAGRAM ===== */
+.diagram {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.flow-box {
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95em;
+  text-align: center;
+  min-width: 120px;
+}
+.flow-box.source { background: #fadbd8; color: #922b21; }
+.flow-box.process { background: #d5f5e3; color: #1e8449; }
+.flow-box.store { background: #d4efdf; color: #1a5276; border: 2px solid #1a5276; }
+.flow-box.output { background: #fef9e7; color: #7d6608; }
+.flow-arrow { font-size: 1.5em; color: var(--gray); }
+
+/* ===== TIMELINE ===== */
+.timeline {
+  border-left: 3px solid var(--accent);
+  margin: 28px 0 28px 24px;
+  padding-left: 28px;
+}
+.timeline-item {
+  margin: 24px 0;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -36px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 3px solid var(--paper);
+}
+.timeline-item .time {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.9em;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.95em;
+}
+th {
+  background: var(--blue);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+tr:nth-child(even) { background: var(--gray-light); }
+tr:hover { background: var(--blue-bg); }
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 60px 40px;
+  color: var(--gray);
+  font-size: 0.9em;
+  border-top: 1px solid var(--border);
+  margin-top: 80px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero { padding: 48px 20px; }
+  .hero h1 { font-size: 2em; }
+  .container { padding: 32px 20px; }
+  h2 { font-size: 1.7em; }
+  .analogy .vs { grid-template-columns: 1fr; }
+  .analogy .vs-divider { text-align: center; }
+  .step { flex-direction: column; gap: 12px; }
+  .toc-bar { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>LLM Knowledge Base</h1>
+    <div class="subtitle">
+      Hướng dẫn xây dựng "bộ não thứ hai" với AI<br>
+      Từ zero đến vận hành — cho người bình thường
+    </div>
+    <div class="credit">
+      Dựa trên ý tưởng của <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank">Andrej Karpathy</a> — Biên soạn & mở rộng bởi Duong Van × Claude
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <nav>
+    <a href="#why">Tại sao?</a>
+    <a href="#concept">Ý tưởng cốt lõi</a>
+    <a href="#architecture">Kiến trúc</a>
+    <a href="#setup">Cài đặt</a>
+    <a href="#ingest">Thu thập</a>
+    <a href="#compile">Biên dịch</a>
+    <a href="#qa">Hỏi-đáp</a>
+    <a href="#lint">Bảo trì</a>
+    <a href="#workflow">Quy trình</a>
+    <a href="#tips">Mẹo hay</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+</div>
+
+<div class="container">
+
+<!-- ===== SECTION 1: TẠI SAO ===== -->
+<h2 id="why"><span class="num">01</span> Tại sao bạn cần một Knowledge Base?</h2>
+
+<p>Bạn đọc hàng trăm bài viết mỗi năm. Bạn bookmark, save, highlight. Rồi khi cần lại… bạn Google lại từ đầu. Kiến thức không tích lũy — nó rơi vào hố đen.</p>
+
+<p>Đây là vấn đề mà mọi người gặp: <strong>thu thập thì dễ, tổ chức thì khó, duy trì thì gần như không thể.</strong></p>
+
+<div class="analogy">
+  <h4>Hình dung thế này</h4>
+  <div class="vs">
+    <div class="vs-item old">
+      <div class="vs-label">Cách cũ</div>
+      <p>Bạn có 500 bookmarks, 200 bài đã save, 50 ghi chú rải rác. Khi cần tìm gì đó, bạn search lại từ đầu. Mỗi lần hỏi, bạn phải tự ghép mảnh thông tin lại.</p>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="vs-item new">
+      <div class="vs-label">Cách mới</div>
+      <p>Bạn có một "cuốn bách khoa" do AI viết và duy trì cho bạn. Mọi thứ đã được tổng hợp, liên kết, cập nhật. Bạn chỉ cần hỏi và đọc.</p>
+    </div>
+  </div>
+</div>
+
+<p>LLM Knowledge Base giải quyết vấn đề này bằng một ý tưởng đơn giản: <strong>để AI làm phần việc nhàm chán</strong> — tóm tắt, phân loại, liên kết, cập nhật — còn bạn chỉ tập trung vào việc đọc, suy nghĩ, và đặt câu hỏi hay.</p>
+
+<!-- ===== SECTION 2: Ý TƯỞNG CỐT LÕI ===== -->
+<h2 id="concept"><span class="num">02</span> Ý tưởng cốt lõi</h2>
+
+<div class="callout idea">
+  <div class="callout-title">Một câu tóm tắt</div>
+  Bạn thu thập tài liệu thô → AI "biên dịch" thành một wiki có cấu trúc → bạn hỏi-đáp trên wiki đó → mỗi câu hỏi làm wiki giàu hơn → lặp lại.
+</div>
+
+<h3>Khác gì so với ChatGPT / NotebookLM / RAG?</h3>
+
+<p>Hầu hết mọi người dùng AI với tài liệu theo kiểu <strong>RAG</strong> (Retrieval-Augmented Generation): upload file lên, hỏi câu hỏi, AI tìm đoạn liên quan rồi trả lời. Mỗi lần hỏi, AI phải "khám phá lại" kiến thức từ đầu.</p>
+
+<div class="analogy">
+  <h4>So sánh dễ hiểu</h4>
+  <div class="vs">
+    <div class="vs-item old">
+      <div class="vs-label">RAG / ChatGPT</div>
+      <p>Giống như bạn có một thư ký đọc nhanh. Mỗi lần bạn hỏi, thư ký lục tủ hồ sơ, tìm đoạn liên quan, rồi trả lời. Nhưng thư ký không nhớ gì từ lần trước. Hỏi câu tương tự ngày mai → lục lại từ đầu.</p>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="vs-item new">
+      <div class="vs-label">LLM Wiki</div>
+      <p>Giống như bạn có một chuyên gia viết sách cho bạn. Chuyên gia đọc từng tài liệu, viết thành chương sách, liên kết các chương lại. Khi bạn hỏi, chuyên gia mở đúng chương cần thiết. Mỗi tài liệu mới → sách được cập nhật.</p>
+    </div>
+  </div>
+</div>
+
+<p>Điểm khác biệt quan trọng nhất: <strong>wiki là một sản phẩm tích lũy</strong>. Nó không biến mất sau mỗi cuộc hội thoại. Nó ngày càng giàu hơn, liên kết hơn, hữu ích hơn — giống như tiền gửi tiết kiệm với lãi kép.</p>
+
+<h3>Ba vai trò rõ ràng</h3>
+
+<table>
+  <tr><th>Ai</th><th>Làm gì</th><th>Không làm gì</th></tr>
+  <tr><td><strong>Bạn</strong></td><td>Chọn nguồn tài liệu, đặt câu hỏi, suy nghĩ</td><td>Không viết wiki, không tổ chức file</td></tr>
+  <tr><td><strong>AI (LLM)</strong></td><td>Tóm tắt, phân loại, liên kết, duy trì wiki</td><td>Không chọn nguồn, không quyết định hướng nghiên cứu</td></tr>
+  <tr><td><strong>Obsidian</strong></td><td>Hiển thị wiki đẹp, graph view, tìm kiếm</td><td>Không xử lý logic, chỉ là "màn hình"</td></tr>
+</table>
+
+<!-- ===== SECTION 3: KIẾN TRÚC ===== -->
+<h2 id="architecture"><span class="num">03</span> Kiến trúc — 3 tầng đơn giản</h2>
+
+<p>Toàn bộ hệ thống chỉ có 3 thành phần. Không cần database, không cần server, không cần cloud. Tất cả là file markdown trên máy tính của bạn.</p>
+
+<div class="diagram">
+  <h4>Luồng dữ liệu</h4>
+  <div class="flow">
+    <div class="flow-box source">Tài liệu thô<br><small>raw/</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box process">AI biên dịch<br><small>LLM</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box store">Wiki<br><small>wiki/</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box output">Câu trả lời<br><small>outputs/</small></div>
+  </div>
+  <div class="flow" style="margin-top:8px;">
+    <div class="flow-box output" style="min-width:auto; padding:8px 16px;">Outputs hay</div>
+    <div class="flow-arrow">↩</div>
+    <div class="flow-box store" style="min-width:auto; padding:8px 16px;">Nhập lại wiki</div>
+    <small style="color:var(--gray); margin-left:8px;">← Vòng lặp tích lũy</small>
+  </div>
+</div>
+
+<h3>Tầng 1: Raw Sources — Tài liệu gốc</h3>
+<p>Đây là "nguyên liệu" — bài viết, paper, code, ghi chú. Bạn chỉ thêm vào, không bao giờ sửa. AI đọc từ đây nhưng không chạm vào. Đây là nguồn sự thật (source of truth) của bạn.</p>
+<pre><code>raw/
+├── articles/     <span class="comment">← Bài blog, tutorial clip từ web</span>
+├── papers/       <span class="comment">← Papers, tài liệu chuyên sâu</span>
+├── code/         <span class="comment">← Code snippets, config mẫu</span>
+├── images/       <span class="comment">← Ảnh, diagram download về local</span>
+└── _inbox/       <span class="comment">← Nơi Web Clipper đổ bài mới vào</span></code></pre>
+
+<h3>Tầng 2: Wiki — Sản phẩm của AI</h3>
+<p>Đây là "cuốn bách khoa" — do AI viết và duy trì 100%. Bạn đọc nó, nhưng không sửa trực tiếp. Mỗi lần có tài liệu mới, AI cập nhật wiki: viết bài mới, sửa bài cũ, tạo liên kết.</p>
+<pre><code>wiki/
+├── _index.md     <span class="comment">← Mục lục tổng — AI đọc đầu tiên</span>
+├── _log.md       <span class="comment">← Nhật ký hoạt động (append-only)</span>
+├── _sources.md   <span class="comment">← Danh sách tài liệu đã xử lý</span>
+├── topic-a/      <span class="comment">← Folder theo chủ đề</span>
+│   ├── _index.md <span class="comment">← Mục lục folder</span>
+│   ├── concept-1.md
+│   └── concept-2.md
+├── topic-b/
+└── outputs/      <span class="comment">← Kết quả Q&A, research</span></code></pre>
+
+<h3>Tầng 3: Schema — "Luật chơi" cho AI</h3>
+<p>Đây là file <code>CLAUDE.md</code> (hoặc <code>AGENTS.md</code>) nằm ở gốc project. Nó dạy AI: cách wiki được tổ chức, quy ước đặt tên, format bài viết, và workflow khi thêm/sửa/tìm kiếm. Bạn và AI cùng cải tiến file này theo thời gian.</p>
+
+<div class="callout success">
+  <div class="callout-title">Tại sao 3 tầng này hiệu quả?</div>
+  <p><strong>Raw</strong> = sự thật gốc, không ai sửa. <strong>Wiki</strong> = kiến thức đã tổng hợp, AI duy trì. <strong>Schema</strong> = luật chơi, bạn và AI cùng cải tiến. Tách biệt 3 tầng → mỗi tầng làm đúng 1 việc → không bao giờ lẫn lộn.</p>
+</div>
+
+<!-- ===== SECTION 4: CÀI ĐẶT ===== -->
+<h2 id="setup"><span class="num">04</span> Cài đặt — Bắt đầu trong 20 phút</h2>
+
+<p>Bạn cần 3 thứ, tất cả miễn phí (trừ API key):</p>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <h4>Cài Obsidian</h4>
+    <p>Tải từ <a href="https://obsidian.md" target="_blank">obsidian.md</a>. Miễn phí cho personal use. Đây là "màn hình" để bạn xem wiki — giống Word nhưng cho markdown, có graph view hiển thị liên kết giữa các bài.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <h4>Cài Obsidian Web Clipper</h4>
+    <p>Extension trên Chrome/Edge. Khi đọc bài hay trên web → click 1 nút → bài viết được save thành file markdown vào <code>raw/_inbox/</code>. Đây là cách nhanh nhất để thu thập tài liệu.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <h4>Chuẩn bị LLM Agent</h4>
+    <p>Bạn cần một AI agent có thể đọc/ghi file trên máy. Các lựa chọn phổ biến:</p>
+    <table>
+      <tr><th>Tool</th><th>Đặc điểm</th><th>Chi phí</th></tr>
+      <tr><td><strong>Claude Code</strong></td><td>CLI, mạnh, đọc/ghi file trực tiếp</td><td>Theo API usage</td></tr>
+      <tr><td><strong>Cursor / Windsurf</strong></td><td>IDE có AI tích hợp, dễ dùng hơn</td><td>Free tier có, Pro ~$20/tháng</td></tr>
+      <tr><td><strong>OpenAI Codex</strong></td><td>CLI, tương tự Claude Code</td><td>Theo API usage</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <h4>Tạo folder project</h4>
+    <pre><code><span class="comment"># Windows PowerShell</span>
+mkdir D:\my-wiki
+cd D:\my-wiki
+mkdir raw\articles, raw\papers, raw\code, raw\images, raw\_inbox
+mkdir wiki\outputs
+git init</code></pre>
+    <p>Mở Obsidian → Open vault → chọn <code>D:\my-wiki</code>. Xong — bạn đã có workspace.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-content">
+    <h4>Tạo CLAUDE.md — "Luật chơi"</h4>
+    <p>Tạo file <code>CLAUDE.md</code> ở gốc project. Copy template dưới đây, sửa phần [CHỦ ĐỀ] thành domain của bạn:</p>
+    <pre><code><span class="comment"># Wiki Operating Manual</span>
+
+<span class="highlight">## Identity</span>
+Bạn là người duy trì knowledge base về <span class="string">[CHỦ ĐỀ]</span>.
+Bạn biên dịch tài liệu thô thành wiki có cấu trúc.
+
+<span class="highlight">## Quy tắc</span>
+- raw/ là bất biến — KHÔNG BAO GIỜ sửa file trong raw/
+- wiki/ là workspace của bạn — bạn sở hữu mọi file ở đây
+- Đọc wiki/_index.md TRƯỚC mọi thao tác
+- Ghi log vào wiki/_log.md SAU mọi thao tác
+- Mỗi bài viết phải có: TLDR, nội dung, nguồn trích dẫn
+- Dùng [[wikilinks]] để liên kết giữa các bài</code></pre>
+  </div>
+</div>
+
+<div class="callout success">
+  <div class="callout-title">Xong!</div>
+  <p>5 bước trên mất khoảng 20 phút. Bạn đã có workspace sẵn sàng. Phần còn lại là học 4 thao tác: Thu thập → Biên dịch → Hỏi-đáp → Bảo trì.</p>
+</div>
+
+<!-- ===== SECTION 5: THU THẬP ===== -->
+<h2 id="ingest"><span class="num">05</span> Thu thập — Đổ "nguyên liệu" vào</h2>
+
+<p>Đây là bước duy nhất bạn phải làm thủ công. Nhưng nó rất nhanh — mỗi lần chỉ vài giây.</p>
+
+<h3>Cách 1: Web Clipper (phổ biến nhất)</h3>
+<p>Đang đọc bài hay trên blog → click icon Web Clipper → chọn save vào <code>raw/_inbox</code> → xong. Bài viết được chuyển thành markdown tự động.</p>
+
+<h3>Cách 2: Copy-paste thủ công</h3>
+<p>Tạo file <code>.md</code> mới trong <code>raw/articles/</code>, paste nội dung vào. Phù hợp cho ghi chú cá nhân, meeting notes, hoặc nội dung không có trên web.</p>
+
+<h3>Cách 3: Download file</h3>
+<p>PDF, code repo, dataset — copy vào <code>raw/</code> folder phù hợp.</p>
+
+<div class="callout warning">
+  <div class="callout-title">Mẹo quan trọng: Download ảnh về local</div>
+  <p>Trong Obsidian Settings → Files and links → đặt Attachment folder path = <code>raw/images/</code>. Sau khi clip bài, bấm Ctrl+Shift+D để download ảnh về local. Lý do: link ảnh trên web có thể hỏng bất cứ lúc nào, ảnh local thì luôn còn.</p>
+</div>
+
+<div class="callout idea">
+  <div class="callout-title">Không cần hoàn hảo</div>
+  <p>Đừng suy nghĩ quá nhiều "bài này thuộc folder nào". Cứ dump hết vào <code>raw/_inbox/</code>. AI sẽ phân loại khi biên dịch. Việc của bạn chỉ là thu thập — đừng để khâu tổ chức làm bạn ngại thu thập.</p>
+</div>
+
+<!-- ===== SECTION 6: BIÊN DỊCH ===== -->
+<h2 id="compile"><span class="num">06</span> Biên dịch — AI chuyển nguyên liệu thành kiến thức</h2>
+
+<p>Đây là bước "phép thuật". Bạn bảo AI đọc tài liệu thô và cập nhật wiki. Cụ thể:</p>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <h4>Bạn ra lệnh</h4>
+    <pre><code><span class="comment"># Ví dụ dùng Claude Code</span>
+claude <span class="string">"Đọc CLAUDE.md, rồi biên dịch file raw/_inbox/bai-viet-moi.md vào wiki"</span></code></pre>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <h4>AI đọc và phân tích</h4>
+    <p>AI đọc tài liệu mới → đọc <code>wiki/_index.md</code> để hiểu cấu trúc hiện tại → quyết định:</p>
+    <p>• Tạo bài mới? (Nếu chủ đề chưa có trong wiki)</p>
+    <p>• Bổ sung bài cũ? (Nếu chủ đề đã tồn tại → merge thông tin mới vào)</p>
+    <p>• Tạo liên kết? (Nếu bài mới liên quan đến bài đã có)</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <h4>AI viết/cập nhật wiki</h4>
+    <p>AI tạo hoặc sửa file <code>.md</code> trong wiki/. Mỗi bài viết có format chuẩn:</p>
+    <pre><code><span class="comment">---</span>
+<span class="highlight">title:</span> <span class="string">Tên bài viết</span>
+<span class="highlight">tldr:</span> <span class="string">"Tóm tắt 1-2 câu để scan nhanh"</span>
+<span class="highlight">sources:</span>
+  - raw/articles/bai-viet-moi.md
+<span class="highlight">tags:</span> [tag1, tag2]
+<span class="highlight">last_compiled:</span> 2026-04-05
+<span class="comment">---</span>
+
+<span class="highlight">## TLDR</span>
+Tóm tắt ngắn gọn nội dung chính...
+
+<span class="highlight">## Nội dung</span>
+Nội dung chi tiết với [[liên kết]] đến bài khác...
+
+<span class="highlight">## Nguồn</span>
+- Tên bài gốc: [raw/articles/bai-viet-moi.md]</code></pre>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <h4>AI cập nhật index và log</h4>
+    <p>AI thêm bài mới vào <code>_index.md</code>, ghi nhật ký vào <code>_log.md</code>, đánh dấu source đã xử lý trong <code>_sources.md</code>.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-content">
+    <h4>Bạn review trong Obsidian</h4>
+    <p>Mở Obsidian → xem bài mới → kiểm tra liên kết có đúng không. Nếu OK → <code>git commit</code>. Nếu không OK → bảo AI sửa lại hoặc <code>git revert</code>.</p>
+  </div>
+</div>
+
+<div class="callout important">
+  <div class="callout-title">Một tài liệu có thể "chạm" 10-15 bài wiki</div>
+  <p>Một bài viết về JPA performance có thể: tạo 1 bài mới về N+1 query, cập nhật bài về connection pooling, thêm liên kết vào bài về testing, bổ sung vào glossary. Đây chính là sức mạnh của wiki — kiến thức được <em>tích hợp</em>, không chỉ được <em>lưu trữ</em>.</p>
+</div>
+
+<!-- ===== SECTION 7: HỎI-ĐÁP ===== -->
+<h2 id="qa"><span class="num">07</span> Hỏi-đáp — Khai thác wiki</h2>
+
+<p>Khi wiki đủ lớn (từ ~20 bài trở lên), bạn bắt đầu thấy sức mạnh: hỏi câu hỏi phức tạp mà AI trả lời từ kiến thức đã tổng hợp, không phải từ internet chung chung.</p>
+
+<pre><code><span class="comment"># Hỏi trực tiếp</span>
+claude <span class="string">"Đọc wiki/_index.md, tìm bài liên quan, rồi trả lời:
+So sánh 3 cách fix N+1 query, cách nào phù hợp nhất cho project có 50+ entities?"</span>
+
+<span class="comment"># Xuất ra file markdown</span>
+claude <span class="string">"Tổng hợp checklist performance cho JPA, lưu vào wiki/outputs/jpa-checklist.md"</span>
+
+<span class="comment"># Xuất ra slide</span>
+claude <span class="string">"Tạo slide tóm tắt kiến thức về Spring Security OAuth2, format Marp"</span></code></pre>
+
+<h3>Cách AI tìm câu trả lời</h3>
+<p>AI không đọc toàn bộ wiki (tốn tokens). Quy trình thông minh hơn:</p>
+
+<div class="diagram">
+  <div class="flow">
+    <div class="flow-box process">Đọc _index.md<br><small>Scan TLDR</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box process">Chọn bài liên quan<br><small>3-5 bài</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box process">Đọc full bài<br><small>Chi tiết</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box output">Trả lời<br><small>Có trích nguồn</small></div>
+  </div>
+</div>
+
+<div class="callout success">
+  <div class="callout-title">Vòng lặp tích lũy — Bí quyết quan trọng nhất</div>
+  <p>Khi AI trả lời một câu hỏi hay — ví dụ so sánh 3 phương pháp — kết quả đó có giá trị. <strong>Đừng để nó biến mất trong lịch sử chat.</strong> Hãy "file" kết quả ngược vào wiki. Lần sau hỏi câu tương tự, wiki đã có sẵn câu trả lời — AI không cần phân tích lại. Kiến thức tích lũy giống lãi kép: mỗi câu hỏi làm wiki giàu hơn.</p>
+</div>
+
+<!-- ===== SECTION 8: BẢO TRÌ ===== -->
+<h2 id="lint"><span class="num">08</span> Bảo trì — Giữ wiki "khỏe mạnh"</h2>
+
+<p>Wiki cũng như vườn cây — cần chăm sóc định kỳ. Tin tốt: AI làm hầu hết việc này cho bạn.</p>
+
+<pre><code>claude <span class="string">"Chạy health check trên wiki. Tìm:
+1. Mâu thuẫn giữa các bài (bài A nói X, bài B nói Y)
+2. Thông tin cũ cần cập nhật
+3. Bài 'mồ côi' không có liên kết từ bài nào khác
+4. Khái niệm quan trọng được nhắc đến nhưng chưa có bài riêng
+5. Liên kết bị thiếu giữa các bài liên quan
+Ghi kết quả vào wiki/outputs/lint-report.md"</span></code></pre>
+
+<h3>Các loại vấn đề AI tìm được</h3>
+
+<table>
+  <tr><th>Vấn đề</th><th>Ví dụ</th><th>AI xử lý</th></tr>
+  <tr><td>Mâu thuẫn</td><td>Bài A nói pool size = 10, Bài B nói = 20</td><td>Flag, bạn quyết định</td></tr>
+  <tr><td>Thông tin cũ</td><td>Source từ 2020, framework đã thay đổi</td><td>Flag + gợi ý tìm source mới</td></tr>
+  <tr><td>Bài mồ côi</td><td>Bài không có liên kết nào trỏ vào</td><td>Tự tạo liên kết phù hợp</td></tr>
+  <tr><td>Thiếu bài</td><td>"OAuth2" được nhắc 15 lần nhưng chưa có bài riêng</td><td>Gợi ý tạo bài mới</td></tr>
+  <tr><td>Liên kết thiếu</td><td>Bài về JPA nhắc HikariCP nhưng chưa link</td><td>Tự thêm [[wikilink]]</td></tr>
+</table>
+
+<div class="callout idea">
+  <div class="callout-title">AI giỏi gợi ý câu hỏi tiếp theo</div>
+  <p>Một phần quan trọng của lint: AI đọc wiki và gợi ý "bạn nên tìm hiểu thêm về X" hoặc "có vẻ thiếu thông tin về Y — nên tìm source bổ sung". Đây là cách wiki "tự biết" mình thiếu gì.</p>
+</div>
+
+<!-- ===== SECTION 9: QUY TRÌNH ===== -->
+<h2 id="workflow"><span class="num">09</span> Quy trình hàng ngày — 15 phút/ngày</h2>
+
+<div class="callout important">
+  <div class="callout-title">Nguyên tắc vàng</div>
+  <p>Nếu quy trình mất hơn 15 phút/ngày, bạn sẽ bỏ cuộc. Giữ nó nhẹ nhàng. Wiki lớn lên từ từ — không cần vội.</p>
+</div>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="time">Mỗi ngày — 5 phút sáng</div>
+    <p><strong>Thu thập.</strong> Đọc feed bình thường. Gặp bài hay → Web Clipper → <code>raw/_inbox/</code>. Không cần suy nghĩ, không cần phân loại. Chỉ clip và đi.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Mỗi ngày — 10 phút tối</div>
+    <p><strong>Biên dịch.</strong> Chạy compile cho những gì mới thu thập trong ngày. Review nhanh trong Obsidian — liên kết có đúng không, TLDR có chính xác không. Commit.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Khi cần — Bất kỳ lúc nào</div>
+    <p><strong>Hỏi-đáp.</strong> Gặp vấn đề trong công việc → hỏi wiki trước, hỏi Google sau. Nếu wiki trả lời tốt → bạn tiết kiệm 30 phút search. Nếu trả lời thiếu → biết wiki cần bổ sung ở đâu.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Cuối tuần — 15 phút</div>
+    <p><strong>Bảo trì.</strong> Chạy lint. Đọc report. Xem wiki đã lớn thêm bao nhiêu trong tuần. Cảm nhận kiến thức tích lũy.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Mỗi tháng — 15 phút</div>
+    <p><strong>Review schema.</strong> Mở CLAUDE.md → conventions nào hoạt động tốt? Cần thêm/bớt gì? Cùng AI cải tiến "luật chơi".</p>
+  </div>
+</div>
+
+<h3>Sau 1 tháng, bạn sẽ có gì?</h3>
+<p>Nếu clip trung bình 2 bài/ngày:</p>
+
+<table>
+  <tr><th>Thời gian</th><th>Raw sources</th><th>Wiki articles</th><th>Cảm giác</th></tr>
+  <tr><td>Tuần 1</td><td>~14 bài</td><td>~10 articles</td><td>"Hmm, chưa thấy gì đặc biệt"</td></tr>
+  <tr><td>Tuần 2</td><td>~28 bài</td><td>~25 articles</td><td>"Ồ, graph view bắt đầu có liên kết"</td></tr>
+  <tr><td>Tháng 1</td><td>~60 bài</td><td>~50 articles</td><td>"Wiki trả lời nhanh hơn Google cho domain này"</td></tr>
+  <tr><td>Tháng 3</td><td>~180 bài</td><td>~120 articles</td><td>"Đây là thứ giá trị nhất trên máy tính của tôi"</td></tr>
+  <tr><td>Tháng 6</td><td>~360 bài</td><td>~200+ articles</td><td>"Tôi biết nhiều hơn 99% đồng nghiệp về domain này"</td></tr>
+</table>
+
+<!-- ===== SECTION 10: MẸO HAY ===== -->
+<h2 id="tips"><span class="num">10</span> Mẹo hay từ thực tế</h2>
+
+<h3>Về Obsidian</h3>
+<p><strong>Graph View</strong> là cách tốt nhất để "nhìn" wiki. Những bài có nhiều liên kết = khái niệm quan trọng. Những bài không có liên kết = có thể cần bổ sung hoặc xóa.</p>
+
+<p><strong>Dataview plugin</strong> cho phép query wiki metadata. Ví dụ: tạo bảng tự động liệt kê "tất cả bài có confidence = low" hoặc "bài chưa cập nhật 30 ngày".</p>
+
+<p><strong>Marp plugin</strong> cho phép xem slide trực tiếp trong Obsidian. Rất hữu ích khi AI tạo slide từ wiki content.</p>
+
+<h3>Về tổ chức</h3>
+<p><strong>TLDR ở đầu mỗi bài</strong> giúp cả bạn và AI scan nhanh. AI đọc index → đọc TLDR → chỉ đọc full bài khi TLDR relevant. Tiết kiệm tokens đáng kể khi wiki lớn.</p>
+
+<p><strong>Git cho wiki</strong> = bạn có version history miễn phí. Sai thì revert. Branch thử nghiệm. Push lên GitHub để backup. Wiki chỉ là folder markdown — git xử lý hoàn hảo.</p>
+
+<p><strong>Đừng phân loại quá sớm.</strong> Bắt đầu với 3-4 folders. Khi wiki lớn lên, bạn sẽ thấy tự nhiên cần tách folder nào. Để AI gợi ý restructure khi lint.</p>
+
+<h3>Về chất lượng</h3>
+<p><strong>Tách sự thật và suy luận.</strong> Khi AI viết wiki, yêu cầu nó đánh dấu rõ: đâu là facts từ source, đâu là inference do AI tổng hợp. Ví dụ: "(inferred)" sau những nhận định AI rút ra nhưng source không nói trực tiếp.</p>
+
+<p><strong>Source attribution.</strong> Mỗi claim quan trọng trong wiki nên link về source gốc: "HikariCP default pool size = 10 [source: raw/articles/hikari-tuning.md]". Khi bạn nghi ngờ → click vào source → đọc gốc để verify.</p>
+
+<p><strong>Confidence levels.</strong> Đánh dấu mỗi bài là high/medium/low confidence. High = nhiều source corroborate. Low = chỉ 1 source hoặc AI infer. Giúp bạn biết nên tin bao nhiêu.</p>
+
+<h3>Về search khi wiki lớn</h3>
+<p>Ở quy mô nhỏ (~100 bài), file <code>_index.md</code> đủ dùng — AI đọc index rồi navigate. Khi wiki vượt 200+ bài, cân nhắc dùng <strong>qmd</strong> (<a href="https://github.com/tobi/qmd" target="_blank">github.com/tobi/qmd</a>) — search engine local cho markdown với BM25 + vector search, chạy hoàn toàn trên máy.</p>
+
+<!-- ===== SECTION 11: FAQ ===== -->
+<h2 id="faq"><span class="num">11</span> Câu hỏi thường gặp</h2>
+
+<h3>Tôi cần biết code không?</h3>
+<p>Không bắt buộc. Nếu dùng Cursor hoặc Windsurf, mọi thao tác đều qua chat. Nếu dùng Claude Code, cần biết mở terminal và gõ lệnh cơ bản. Không cần biết lập trình.</p>
+
+<h3>Tốn bao nhiêu tiền?</h3>
+<p>Obsidian: miễn phí. Git: miễn phí. Chi phí duy nhất là LLM API — khoảng $5-20/tháng tùy mức dùng. Compile 1 bài tốn ~$0.02-0.05. Nếu compile 2 bài/ngày → ~$3/tháng.</p>
+
+<h3>Wiki có thể lớn đến đâu?</h3>
+<p>Karpathy chạy ~100 bài, ~400K từ mà không cần RAG phức tạp. Ở quy mô ~200-500 bài, thêm search engine (qmd) là đủ. Vượt 1000 bài → cân nhắc finetune model để "biết" wiki trong weights thay vì chỉ qua context.</p>
+
+<h3>Nếu AI viết sai thì sao?</h3>
+<p>3 lớp bảo vệ: (1) Source attribution — mỗi claim link về nguồn gốc, bạn verify được. (2) Confidence levels — bài "low confidence" bạn biết cần cẩn thận. (3) Git — sai thì revert. Quan trọng: đừng tin wiki 100% — verify claim quan trọng bằng source gốc.</p>
+
+<h3>Dùng cho topic gì được?</h3>
+<p>Bất kỳ lĩnh vực nào bạn tích lũy kiến thức theo thời gian. Ví dụ: lập trình (Spring Boot, Python), nghiên cứu (AI, blockchain), business (market analysis), cá nhân (health, finance), sở thích (wine, photography), và nhiều hơn nữa. Một người có thể chạy nhiều KB cho nhiều topic khác nhau.</p>
+
+<h3>Khác gì Notion / Confluence / wiki thường?</h3>
+<p>Sự khác biệt lớn nhất: <strong>ai duy trì nó</strong>. Wiki thường do con người viết và duy trì → con người bận → wiki chết. LLM wiki do AI duy trì → chi phí maintain gần bằng 0 → wiki sống và lớn lên liên tục. Con người bỏ cuộc với wiki vì gánh nặng bảo trì tăng nhanh hơn giá trị. LLM giải quyết vấn đề này.</p>
+
+<h3>Tôi nên bắt đầu từ đâu?</h3>
+<p>Chọn 1 topic bạn đang thật sự cần hàng ngày. Cài đặt theo Section 04. Clip 5 bài đầu tiên. Compile. Hỏi 1 câu. Nếu câu trả lời hữu ích → bạn sẽ tự muốn tiếp tục. Nếu không → thử topic khác.</p>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>Dựa trên <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" style="color:var(--accent);">LLM Wiki gist</a> của Andrej Karpathy (April 2026)</p>
+  <p>Biên soạn & mở rộng bởi Duong Van × Claude — cho cộng đồng developer Việt Nam</p>
+  <p style="margin-top:16px; opacity:0.6;">Wiki chỉ là folder markdown + git. Bạn sở hữu 100% data. Không cloud, không lock-in, không subscription.</p>
+</div>
+
+</body>
+</html>
